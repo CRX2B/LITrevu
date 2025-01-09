@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="review-detail">
+    <h1>Détail de la critique</h1>
+
+    {% if review.ticket %}
+    <div class="ticket-section">
+        <h2>Ticket associé</h2>
+        <div class="ticket">
+            <div class="ticket-header">
+                <h3>{{ review.ticket.title }}</h3>
+                <span class="author">Par {{ review.ticket.user }}</span>
+            </div>
+            <div class="ticket-content">
+                <p class="description">{{ review.ticket.description }}</p>
+                {% if review.ticket.image %}
+                    <div class="ticket-image">
+                        <img src="{{ review.ticket.image.url }}" alt="Image du ticket">
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="review-section">
+        <h2>Critique</h2>
+        <div class="review">
+            <div class="review-header">
+                <h3>{{ review.headline }}</h3>
+                <span class="author">Par {{ review.user }}</span>
+            </div>
+            <div class="review-content">
+                <div class="rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="review-body">{{ review.body }}</p>
+            </div>
+
+            {% if user == review.user %}
+                <div class="review-actions">
+                    <a href="{% url 'update_review' review.pk %}" class="btn">Modifier</a>
+                    <a href="{% url 'delete_review' review.pk %}" class="btn btn-danger">Supprimer</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

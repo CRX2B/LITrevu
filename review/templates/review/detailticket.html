@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="ticket-detail">
+    <h1>Détail du ticket</h1>
+    
+    <div class="ticket">
+        <div class="ticket-header">
+            <h2>{{ ticket.title }}</h2>
+            <span class="author">Par {{ ticket.user.username }}</span>
+        </div>
+        
+        <div class="ticket-content">
+            <p class="description">{{ ticket.description }}</p>
+            {% if ticket.image %}
+                <div class="ticket-image">
+                    <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+                </div>
+            {% endif %}
+        </div>
+
+        {% if user == ticket.user %}
+            <div class="ticket-actions">
+                <a href="{% url 'update_ticket' ticket.pk %}" class="btn">Modifier le ticket</a>
+                <form method="post" action="{% url 'delete_ticket' ticket.pk %}" class="inline-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Supprimer le ticket</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not ticket.review_set.exists %}
+    <div class="review-section">
+        <h2>Créer une critique</h2>
+        <form method="post" action="{% url 'create_review' ticket.pk %}" class="review-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Publier la critique</button>
+        </form>
+    </div>
+    {% else %}
+        <p>Une critique existe déjà pour ce ticket</p>
+    {% endif %}
+</div>
+{% endblock %}

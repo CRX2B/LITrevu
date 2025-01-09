@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>Modifier mon profil</h1>
+        <form method="post" enctype="multipart/form-data" class="auth-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </form>
+        <div class="auth-links">
+            <a href="{% url 'home' %}" class="btn">Retour à l'accueil</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

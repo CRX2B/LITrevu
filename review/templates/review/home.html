@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="welcome-section">
+        <h1>Bienvenue, {{ user.username }} !</h1>
+        
+        <div class="actions">
+            <a href="{% url 'create_ticket' %}" class="btn btn-primary">Créer un ticket</a>
+            <a href="{% url 'create_review_without_ticket' %}" class="btn btn-primary">Créer une critique</a>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <section class="tickets-section">
+            <h2>Tickets</h2>
+            <div class="grid-container">
+                {% for ticket in tickets %}
+                    <article class="ticket">
+                        <div class="ticket-header">
+                            <h3><a href="{% url 'detail_ticket' ticket.id %}">{{ ticket.title }}</a></h3>
+                            <span class="author">Par {{ ticket.user.username }}</span>
+                        </div>
+                        {% if ticket.image %}
+                            <div class="ticket-image">
+                                <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+                            </div>
+                        {% endif %}
+                        <div class="ticket-content">
+                            <p>{{ ticket.description }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="reviews-section">
+            <h2>Critiques</h2>
+            <div class="grid-container">
+                {% for review in reviews %}
+                    <article class="review">
+                        <div class="review-header">
+                            <h3><a href="{% url 'detail_review' review.id %}">{{ review.headline }}</a></h3>
+                            <span class="author">Par {{ review.user.username }}</span>
+                        </div>
+                        <div class="review-content">
+                            <div class="rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        ★
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p>{{ review.body }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% else %}
+    <div class="login-prompt">
+        <p>Veuillez vous <a href="{% url 'login' %}">connecter</a> pour accéder au contenu.</p>
+    </div>
+{% endif %}
+{% endblock %}

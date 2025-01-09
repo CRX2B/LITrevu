@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="follow-section">
+    <h2>Suivre des utilisateurs</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enregistrer</button>
+    </form>
+</div>
+
+<div class="following-section">
+    <h2>Utilisateurs que vous suivez</h2>
+    {% if following %}
+        <ul>
+            {% for follow in following %}
+                <li>
+                    <span>{{ follow.followed_user.username }}</span>
+                    <form method="post" action="{% url 'unfollow_user' follow.followed_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Ne plus suivre</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Vous ne suivez personne pour le moment.</p>
+    {% endif %}
+</div>
+
+<div class="followers-section">
+    <h2>Utilisateurs qui vous suivent</h2>
+    {% if followers %}
+        <ul>
+            {% for follow in followers %}
+                <li>{{ follow.user.username }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Personne ne vous suit pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

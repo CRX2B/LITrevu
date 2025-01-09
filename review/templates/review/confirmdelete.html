@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="confirm-delete">
+    <div class="confirm-box">
+        <h1>Confirmer la suppression</h1>
+        <div class="warning-message">
+            <p>Voulez-vous vraiment supprimer cet élément ?</p>
+            <p class="warning-text">Cette action est irréversible.</p>
+        </div>
+        <form method="post" class="confirm-form">
+            {% csrf_token %}
+            <div class="button-group">
+                <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
