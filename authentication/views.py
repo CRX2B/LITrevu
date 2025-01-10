@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from .forms import SignupForm, UserUpdateForm
 from django.conf import settings
 
+
 def signup(request):
     form = SignupForm()
     if request.method == "POST":
@@ -22,4 +23,3 @@ def update_user(request):
             form.save()
             return redirect("home")
     return render(request, "authentication/updateuser.html", context={"form": form})
-

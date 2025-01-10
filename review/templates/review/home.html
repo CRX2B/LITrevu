@@ -24,12 +24,10 @@
                         </div>
                         <div class="item-header">
                             {% if item.title %}
-                                <!-- C'est un ticket -->
                                 <h3><a href="{% url 'detail_ticket' item.id %}">{{ item.title }}</a></h3>
                                 <span class="author">Par {{ item.user.username }}</span>
                                 <p>{{ item.description }}</p>
                             {% else %}
-                                <!-- C'est une critique sans ticket -->
                                 <h3><a href="{% url 'detail_review' item.id %}">{{ item.headline }}</a></h3>
                                 <span class="author">Par {{ item.user.username }}</span>
                             {% endif %}
