@@ -15,13 +15,13 @@
     {% if following %}
         <ul>
             {% for follow in following %}
-                <li>
-                    <span>{{ follow.followed_user.username }}</span>
+
                     <form method="post" action="{% url 'unfollow_user' follow.followed_user.id %}">
+                        <span>{{ follow.followed_user.username }}</span>
                         {% csrf_token %}
                         <button type="submit" class="btn btn-secondary">Ne plus suivre</button>
                     </form>
-                </li>
+                    <br>
             {% endfor %}
         </ul>
     {% else %}
@@ -34,7 +34,8 @@
     {% if followers %}
         <ul>
             {% for follow in followers %}
-                <li>{{ follow.user.username }}</li>
+                {{ follow.user.username }}
+                <br>
             {% endfor %}
         </ul>
     {% else %}

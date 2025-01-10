@@ -8,6 +8,8 @@ from .forms import TicketForm, PostReviewForm, FollowUsersForm
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views import View
+from django.db.models import Q
+from itertools import chain
 
 
 # Views pour Ticket
@@ -124,12 +126,20 @@ class UnfollowUserView(LoginRequiredMixin, View):
 # Views pour la page d'accueil
 @login_required
 def home(request):
-    tickets = Ticket.objects.all()
-    reviews = Review.objects.all()
-    return render(request, "review/home.html", {
-        "tickets": tickets,
-        "reviews": reviews,
-    })
+    tickets = Ticket.objects.filter(
+        Q(user=request.user) | 
+        Q(user__in=UserFollows.objects.filter(user=request.user).values_list('followed_user', flat=True))
+    ).prefetch_related('review_set')
+    reviews_without_ticket = Review.objects.filter(
+        Q(user=request.user) | 
+        Q(user__in=UserFollows.objects.filter(user=request.user).values_list('followed_user', flat=True)),
+        ticket__isnull=True
+    )
+    flux = sorted(chain(tickets, reviews_without_ticket), key=lambda instance: instance.created_at, reverse=True)
+    context = {
+        "flux": flux,
+    }
+    return render(request, "review/home.html", context)
 
 
 
