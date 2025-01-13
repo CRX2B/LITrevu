@@ -22,9 +22,7 @@
         {% if user == ticket.user %}
             <div class="ticket-actions">
                 <a href="{% url 'update_ticket' ticket.pk %}" class="btn">Modifier le ticket</a>
-                <form method="post" action="{% url 'delete_ticket' ticket.pk %}" class="inline-form">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Supprimer le ticket</button>
+                <a href="{% url 'delete_ticket' ticket.pk %}" class="btn btn-danger">Supprimer le ticket</a>
                 </form>
             </div>
         {% endif %}
