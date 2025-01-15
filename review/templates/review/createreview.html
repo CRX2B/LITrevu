@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if ticket %}
 <h1>Créer une critique</h1>
 <p>Vous êtes en train de poster une critique en réponse à l'ouvrage suivant :</p>
 <p>{{ ticket.title }}</p>
@@ -14,12 +13,4 @@
         {{ form.as_p }}
         <button type="submit">Créer</button>
     </form>
-{% else %}
-    <h2>Créer une critique</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Créer</button>
-    </form>
-{% endif %}
 {% endblock %}

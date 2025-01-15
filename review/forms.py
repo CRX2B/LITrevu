@@ -25,6 +25,15 @@ class PostReviewForm(forms.ModelForm):
             "body": forms.Textarea(attrs={"rows": 4}),
             "rating": forms.RadioSelect(choices=Review.RATING_CHOICES),
         }
+  
+        
+class PostReviewAndTicketForm(forms.Form):
+    title = forms.CharField(max_length=128, label="Titre du ticket")
+    description = forms.CharField(widget=forms.Textarea, required=False, label="Description du ticket")
+    image = forms.ImageField(required=False)
+    
+    rating = forms.ChoiceField(choices=[(i, str(i)) for i in range(1, 6)], label="Note")
+    comment = forms.CharField(widget=forms.Textarea, label="Commentaires")
 
 
 class FollowUsersForm(forms.ModelForm):

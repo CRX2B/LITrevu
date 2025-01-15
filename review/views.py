@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     CreateView,
@@ -9,9 +9,8 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .models import Ticket, Review, UserFollows
-from .forms import TicketForm, PostReviewForm, FollowUsersForm
+from .forms import TicketForm, PostReviewForm, FollowUsersForm, PostReviewAndTicketForm
 from django.http import HttpResponse
-from django.shortcuts import redirect
 from django.views import View
 from django.db.models import Q
 from itertools import chain
@@ -115,21 +114,31 @@ class ReviewDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "review/confirmdelete.html"
 
 
-class CreateReviewWithoutTicketView(LoginRequiredMixin, CreateView):
-    """
-    Vue pour créer une critique sans ticket associé.
-    Permet de créer une critique spontanée sur n'importe quel livre.
-    """
-
-    model = Review
-    form_class = PostReviewForm
-    template_name = "review/createreview.html"
-    success_url = reverse_lazy("home")
-
-    def form_valid(self, form):
-        """Associe l'utilisateur connecté à la critique"""
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+@login_required
+def create_review_and_ticket(request):
+    if request.method == 'POST':
+        form = PostReviewAndTicketForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Créer le ticket
+            ticket = Ticket.objects.create(
+                title=form.cleaned_data['title'],
+                description=form.cleaned_data['description'],
+                image=form.cleaned_data['image'],
+                user=request.user
+            )
+            # Créer la critique
+            Review.objects.create(
+                ticket=ticket,
+                rating=form.cleaned_data['rating'],
+                headline=form.cleaned_data['title'],
+                body=form.cleaned_data['comment'],
+                user=request.user
+            )
+            return redirect('home')
+    else:
+        form = PostReviewAndTicketForm()
+    
+    return render(request, 'review/createreviewandticket.html', {'form': form})
 
 
 class FollowUsersView(LoginRequiredMixin, CreateView):
@@ -190,30 +199,22 @@ def home(request):
     - Des utilisateurs qu'il suit
     Les éléments sont triés par date de création décroissante.
     """
-    # Récupère les tickets de l'utilisateur et des personnes suivies
+    # Obtenir les utilisateurs suivis
+    followed_users = UserFollows.objects.filter(user=request.user).values_list("followed_user", flat=True)
+
+    # Récupérer les tickets de l'utilisateur et des personnes suivies
     tickets = Ticket.objects.filter(
-        Q(user=request.user)
-        | Q(
-            user__in=UserFollows.objects.filter(user=request.user).values_list(
-                "followed_user", flat=True
-            )
-        )
+        Q(user=request.user) | Q(user__in=followed_users)
     ).prefetch_related("review_set")
 
-    # Récupère les critiques sans ticket
-    reviews_without_ticket = Review.objects.filter(
-        Q(user=request.user)
-        | Q(
-            user__in=UserFollows.objects.filter(user=request.user).values_list(
-                "followed_user", flat=True
-            )
-        ),
-        ticket__isnull=True,
+    # Récupérer les critiques associées aux tickets
+    reviews = Review.objects.filter(
+        Q(user=request.user) | Q(user__in=followed_users)
     )
 
-    # Combine et trie les deux types de contenu
+    # Combiner et trier les deux types de contenu
     flux = sorted(
-        chain(tickets, reviews_without_ticket),
+        chain(tickets, reviews),
         key=lambda instance: instance.created_at,
         reverse=True,
     )
