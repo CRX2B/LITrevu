@@ -111,6 +111,7 @@ urlpatterns = [
         review.views.UnfollowUserView.as_view(),
         name="unfollow_user",
     ),
+    path("user_posts/", review.views.user_posts, name="user_posts"),
 ]
 
 if settings.DEBUG:

@@ -187,6 +187,17 @@ class UnfollowUserView(LoginRequiredMixin, View):
             return redirect("follow_users")
         except UserFollows.DoesNotExist:
             return HttpResponse("Vous ne suivez pas cet utilisateur")
+        
+        
+@login_required
+def user_posts(request):
+    tickets = Ticket.objects.filter(user=request.user)
+    reviews = Review.objects.filter(user=request.user)
+    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.created_at, reverse=True)
+    context = {
+        "posts": posts,
+    }
+    return render(request, "review/userposts.html", context)
 
 
 # Views pour la page d'accueil
