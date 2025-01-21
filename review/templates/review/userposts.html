@@ -2,30 +2,96 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-    <h1>Posts de l'utilisateur</h1>
 
-    {% for post in posts %}
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ post.title }}</h5>
-                {% if post.image %}
-                  <img src="{{ post.image.url }}" alt="{{ post.title }}">
-                {% endif %}
-                <div class="rating">
-                    {% for i in "12345" %}
-                        {% if i <= post.rating %}
-                            ★
-                        {% else %}
-                            ☆
-                        {% endif %}
-                <p class="card-text">{{ post.body }}</p>
-            </div>
+<div class="user-posts-container">
+    <section class="user-posts" aria-labelledby="user-posts-title">
+        <h1 id="user-posts-title">Mes Publications</h1>
+
+        <div class="posts-grid">
+            <!-- Affichage des tickets -->
+            {% for ticket in tickets %}
+                <article class="post-item" aria-labelledby="ticket-title-{{ forloop.counter }}">
+                    <div class="ticket-box">
+                        <div class="content-header ticket-header">
+                            <h2 id="ticket-title-{{ forloop.counter }}">
+                                <a href="{% url 'detail_ticket' ticket.id %}" class="title-link">{{ ticket.title }}</a>
+                            </h2>
+                            <time datetime="{{ ticket.created_at|date:'Y-m-d' }}" class="post-date">
+                                {{ ticket.created_at|date:"d/m/Y" }}
+                            </time>
+                        </div>
+                        <div class="ticket-content">
+                            <p>{{ ticket.description }}</p>
+                            {% if ticket.image %}
+                                <div class="ticket-image">
+                                    <img src="{{ ticket.image.url }}" alt="Image pour {{ ticket.title }}">
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="post-actions">
+                            <a href="{% url 'update_ticket' ticket.id %}" class="btn btn-primary" 
+                               aria-label="Modifier le ticket {{ ticket.title }}">Modifier</a>
+                            <a href="{% url 'delete_ticket' ticket.id %}" class="btn btn-danger"
+                               aria-label="Supprimer le ticket {{ ticket.title }}">Supprimer</a>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+
+            <!-- Affichage des critiques -->
+            {% for review in reviews %}
+                <article class="post-item" aria-labelledby="review-title-{{ forloop.counter }}">
+                    <div class="review-box">
+                        <div class="content-header review-header">
+                            <h2 id="review-title-{{ forloop.counter }}">
+                                <a href="{% url 'detail_review' review.id %}" class="title-link">{{ review.headline }}</a>
+                            </h2>
+                            <time datetime="{{ review.created_at|date:'Y-m-d' }}" class="post-date">
+                                {{ review.created_at|date:"d/m/Y" }}
+                            </time>
+                        </div>
+                        <div class="review-content">
+                            <p class="visually-hidden">Note : {{ review.rating }} sur 5</p>
+                            <div class="rating" role="img" aria-hidden="true">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <span>★</span>
+                                    {% else %}
+                                        <span>☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p>{{ review.body }}</p>
+                            
+                            <!-- Ticket associé -->
+                            {% if review.ticket %}
+                                <div class="ticket-review-box">
+                                    <div class="content-header ticket-header">
+                                        <h3>En réponse au ticket : {{ review.ticket.title }}</h3>
+                                        <span class="author">Par {{ review.ticket.user.username }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="post-actions">
+                            <a href="{% url 'update_review' review.id %}" class="btn btn-primary"
+                               aria-label="Modifier la critique {{ review.headline }}">Modifier</a>
+                            <a href="{% url 'delete_review' review.id %}" class="btn btn-danger"
+                               aria-label="Supprimer la critique {{ review.headline }}">Supprimer</a>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+
+            {% if not tickets and not reviews %}
+                <p class="no-posts-message" role="status">Vous n'avez pas encore de publications.</p>
+            {% endif %}
         </div>
-        {% endfor %}
-    {% empty %}
-        <div class="login-prompt">
-            <p>Veuillez vous <a href="{% url 'login' %}">connecter</a> pour accéder au contenu.</p>
-        </div>
-    {% endfor %}
+    </section>
+</div>
+{% else %}
+    <div class="login-prompt">
+        <p>Veuillez vous <a href="{% url 'login' %}">connecter</a> pour accéder au contenu.</p>
+    </div>
 {% endif %}
 {% endblock %}

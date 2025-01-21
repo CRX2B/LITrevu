@@ -1,56 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="review-detail">
-    <h1>Détail de la critique</h1>
+<main>
+    <article class="review-detail">
+        <div class="content-header review-header">
+            <h1>{{ review.headline }}</h1>
+            <span class="author">Par {{ review.user.username }}</span>
+        </div>
 
-    {% if review.ticket %}
-    <div class="ticket-section">
-        <h2>Ticket associé</h2>
-        <div class="ticket">
-            <div class="ticket-header">
+        <div class="review-content">
+            <p class="visually-hidden">Note : {{ review.rating }} sur 5</p>
+            <div class="rating" role="img" aria-hidden="true">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}
+                        <span>★</span>
+                    {% else %}
+                        <span>☆</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <p>{{ review.body }}</p>
+        </div>
+
+        <!-- Ticket associé -->
+        <section class="ticket-review-box" aria-labelledby="ticket-title">
+            <h2 id="ticket-title">Ticket associé</h2>
+            <div class="content-header ticket-header">
                 <h3>{{ review.ticket.title }}</h3>
-                <span class="author">Par {{ review.ticket.user }}</span>
+                <span class="author">Par {{ review.ticket.user.username }}</span>
             </div>
             <div class="ticket-content">
-                <p class="description">{{ review.ticket.description }}</p>
+                <p>{{ review.ticket.description }}</p>
                 {% if review.ticket.image %}
                     <div class="ticket-image">
-                        <img src="{{ review.ticket.image.url }}" alt="Image du ticket">
+                        <img src="{{ review.ticket.image.url }}" alt="Image pour {{ review.ticket.title }}">
                     </div>
                 {% endif %}
             </div>
-        </div>
-    </div>
-    {% endif %}
-    
-    <div class="review-section">
-        <h2>Critique</h2>
-        <div class="review">
-            <div class="review-header">
-                <h3>{{ review.headline }}</h3>
-                <span class="author">Par {{ review.user }}</span>
-            </div>
-            <div class="review-content">
-                <div class="rating">
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= review.rating %}
-                            ★
-                        {% else %}
-                            ☆
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <p class="review-body">{{ review.body }}</p>
-            </div>
+        </section>
 
-            {% if user == review.user %}
-                <div class="review-actions">
-                    <a href="{% url 'update_review' review.pk %}" class="btn">Modifier</a>
-                    <a href="{% url 'delete_review' review.pk %}" class="btn btn-danger">Supprimer</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
+        {% if user == review.user %}
+            <div class="review-actions">
+                <a href="{% url 'update_review' review.id %}" class="btn btn-primary">Modifier</a>
+                <a href="{% url 'delete_review' review.id %}" class="btn btn-danger">Supprimer</a>
+            </div>
+        {% endif %}
+    </article>
+</main>
 {% endblock %}

@@ -1,45 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="follow-section">
-    <h2>Suivre des utilisateurs</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Enregistrer</button>
-    </form>
-</div>
+<main>
+    <section class="follow-container" aria-labelledby="follow-title">
+        <h1 id="follow-title">Suivre des utilisateurs</h1>
 
-<div class="following-section">
-    <h2>Utilisateurs que vous suivez</h2>
-    {% if following %}
-        <ul>
-            {% for follow in following %}
+        <div class="search-section">
+            <h2>Rechercher un utilisateur</h2>
+            <form method="post" class="search-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="search_user">Nom d'utilisateur :</label>
+                    <input type="text" id="search_user" name="search_user" class="form-control" 
+                           aria-describedby="search-help">
+                    <small id="search-help" class="form-text">Entrez le nom d'utilisateur que vous souhaitez suivre</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Suivre</button>
+            </form>
+        </div>
 
-                    <form method="post" action="{% url 'unfollow_user' follow.followed_user.id %}">
-                        <span>{{ follow.followed_user.username }}</span>
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary">Ne plus suivre</button>
-                    </form>
-                    <br>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Vous ne suivez personne pour le moment.</p>
-    {% endif %}
-</div>
+        <div class="subscriptions-section">
+            <h2>Abonnements</h2>
+            {% if following %}
+                <ul class="follow-list">
+                    {% for follow in following %}
+                        <li class="user-item">
+                            {{ follow.followed_user.username }}
+                            <form method="post" action="{% url 'unfollow_user' follow.followed_user.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Désabonner</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Vous ne suivez personne pour le moment.</p>
+            {% endif %}
+        </div>
 
-<div class="followers-section">
-    <h2>Utilisateurs qui vous suivent</h2>
-    {% if followers %}
-        <ul>
-            {% for follow in followers %}
-                {{ follow.user.username }}
-                <br>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Personne ne vous suit pour le moment.</p>
-    {% endif %}
-</div>
+        <div class="followers-section">
+            <h2>Abonnés</h2>
+            {% if followers %}
+                <ul class="follow-list">
+                    {% for follower in followers %}
+                        <li class="user-item">{{ follower.user.username }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Personne ne vous suit pour le moment.</p>
+            {% endif %}
+        </div>
+    </section>
+</main>
 {% endblock %}

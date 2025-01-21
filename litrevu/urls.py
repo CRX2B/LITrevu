@@ -87,7 +87,8 @@ urlpatterns = [
         name="create_review",
     ),
     path(
-        "review/create/",review.views.create_review_and_ticket,
+        "review/create/",
+        review.views.create_review_and_ticket,
         name="create_review_and_ticket",
     ),
     path(

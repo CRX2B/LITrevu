@@ -2,53 +2,94 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-    <div class="welcome-section">
-        <h1>Bienvenue, {{ user.username }} !</h1>
-        
-        <div class="actions">
-            <a href="{% url 'create_ticket' %}" class="btn btn-primary">Créer un ticket</a>
-            <a href="{% url 'create_review_and_ticket' %}" class="btn btn-primary">Créer une critique</a>
+    <main>
+        <div class="welcome-section">
+            <h1>Bienvenue, {{ user.username }} !</h1>
+            
+            <div class="actions">
+                <a href="{% url 'create_ticket' %}" class="btn btn-primary">Créer un ticket</a>
+                <a href="{% url 'create_review_and_ticket' %}" class="btn btn-primary">Créer une critique</a>
+            </div>
         </div>
-    </div>
 
-    <div class="content-grid">
-        <section class="flux-section">
-            <h2>Flux</h2>
+        <section class="flux-section" aria-label="Flux d'activité">
             <div class="grid-container">
                 {% for item in flux %}
                     <article class="flux-item">
-                        <div class="ticket-image">
-                            {% if item.title and item.image %}
-                                <img src="{{ item.image.url }}" alt="{{ item.title }}">
-                            {% endif %}
-                        </div>
-                        <div class="item-header">
-                            {% if item.title %}
-                                <h3><a href="{% url 'detail_ticket' item.id %}">{{ item.title }}</a></h3>
-                                <span class="author">Par {{ item.user.username }}</span>
-                                <p>{{ item.description }}</p>
-                            {% else %}
-                                <h3><a href="{% url 'detail_review' item.id %}">{{ item.headline }}</a></h3>
-                                <span class="author">Par {{ item.user.username }}</span>
-                            {% endif %}
-                            <div class="review-content">
-                                <div class="rating">
-                                    {% for i in "12345" %}
-                                        {% if forloop.counter <= item.rating %}
-                                            ★
-                                        {% else %}
-                                            ☆
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if item.headline %}
+                            <!-- Review avec ticket associé -->
+                            <div class="review-box">
+                                <div class="content-header review-header">
+                                    <h2><a href="{% url 'detail_review' item.pk %}" class="title-link">{{ item.headline }}</a></h2>
+                                    <div class="meta-info">
+                                        <span class="author">Par {{ item.user.username }}</span>
+                                        <time datetime="{{ item.created_at|date:'Y-m-d' }}" class="post-date">
+                                            {{ item.created_at|date:"d/m/Y" }}
+                                        </time>
+                                    </div>
                                 </div>
-                                <p>{{ item.body }}</p>
+                                <div class="review-content">
+                                    <p class="visually-hidden">Note : {{ item.rating }} sur 5</p>
+                                    <div class="rating" role="img" aria-hidden="true">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= item.rating %}
+                                                <span>★</span>
+                                            {% else %}
+                                                <span>☆</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <p>{{ item.body }}</p>
+                                </div>
+                                
+                                <!-- Ticket associé à la review -->
+                                <div class="ticket-review-box">
+                                    <div class="content-header ticket-header">
+                                        <h3>Ticket : <a href="{% url 'detail_ticket' item.ticket.pk %}" class="title-link">{{ item.ticket.title }}</a></h3>
+                                        <div class="meta-info">
+                                            <span class="author">Par {{ item.ticket.user.username }}</span>
+                                            <time datetime="{{ item.ticket.created_at|date:'Y-m-d' }}" class="post-date">
+                                                {{ item.ticket.created_at|date:"d/m/Y" }}
+                                            </time>
+                                        </div>
+                                    </div>
+                                    <div class="ticket-content">
+                                        <p>{{ item.ticket.description }}</p>
+                                        {% if item.ticket.image %}
+                                            <div class="ticket-image">
+                                                <img src="{{ item.ticket.image.url }}" alt="Image pour {{ item.ticket.title }}">
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <!-- Ticket sans review -->
+                            <div class="ticket-box">
+                                <div class="content-header ticket-header">
+                                    <h2><a href="{% url 'detail_ticket' item.pk %}" class="title-link">{{ item.title }}</a></h2>
+                                    <div class="meta-info">
+                                        <span class="author">Par {{ item.user.username }}</span>
+                                        <time datetime="{{ item.created_at|date:'Y-m-d' }}" class="post-date">
+                                            {{ item.created_at|date:"d/m/Y" }}
+                                        </time>
+                                    </div>
+                                </div>
+                                <div class="ticket-content">
+                                    <p>{{ item.description }}</p>
+                                    {% if item.image %}
+                                        <div class="ticket-image">
+                                            <img src="{{ item.image.url }}" alt="Image pour {{ item.title }}">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </article>
                 {% endfor %}
             </div>
         </section>
-    </div>
+    </main>
 {% else %}
     <div class="login-prompt">
         <p>Veuillez vous <a href="{% url 'login' %}">connecter</a> pour accéder au contenu.</p>

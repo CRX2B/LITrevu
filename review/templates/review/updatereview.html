@@ -1,11 +1,58 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h1>Modifier la critique</h1>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Enregistrer les modifications</button>
-</form>
-<a href="{% url 'delete_review' review.pk %}" class="btn">Supprimer la critique</a>
+<div class="form-container">
+    <section class="update-review-section" aria-labelledby="update-review-title">
+        <h1 id="update-review-title">Modifier la critique</h1>
+
+        {% if ticket %}
+            <article class="ticket-preview" aria-labelledby="ticket-title">
+                <h2 id="ticket-title">Ticket associé</h2>
+                <div class="ticket-box">
+                    <div class="content-header ticket-header">
+                        <h3>{{ ticket.title }}</h3>
+                        <span class="author">Par {{ ticket.user.username }}</span>
+                    </div>
+                    <div class="ticket-content">
+                        <p>{{ ticket.description }}</p>
+                        {% if ticket.image %}
+                            <div class="ticket-image">
+                                <img src="{{ ticket.image.url }}" alt="Image pour {{ ticket.title }}">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% endif %}
+
+        <form method="post" class="review-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small id="{{ field.id_for_label }}-help" class="form-text">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="error-message" role="alert">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" 
+                        aria-label="Enregistrer les modifications de la critique">
+                    Enregistrer les modifications
+                </button>
+                <a href="{% url 'detail_review' review.id %}" class="btn btn-secondary" 
+                   role="button">Annuler</a>
+            </div>
+        </form>
+    </section>
+</div>
 {% endblock %}

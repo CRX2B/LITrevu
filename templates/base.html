@@ -1,13 +1,14 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>LITrevu</title>
-        {% load static %}
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     </head>
     <body>
+        <a href="#main-content" class="skip-link">Aller au contenu principal</a>
         <header>
             <div class="header-content">
                 <h1 class="site-title">LITrevu</h1>
@@ -29,7 +30,14 @@
                 </nav>
             </div>
         </header>
-        <main class="container">
+        <main id="main-content" class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
             {% block content %}{% endblock %}
         </main>
     </body>

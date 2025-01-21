@@ -1,11 +1,60 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
+<div class="form-container">
+    <section class="create-combined-section" aria-labelledby="create-combined-title">
+        <h1 id="create-combined-title">Créer une critique avec ticket</h1>
 
-    <h2>Créer une critique et son ticket</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Créer</button>
-    </form>
+        <form method="post" enctype="multipart/form-data" class="combined-form">
+            {% csrf_token %}
+            
+            <!-- Section Ticket -->
+            <div class="ticket-section" role="group" aria-labelledby="ticket-section-title">
+                <h2 id="ticket-section-title">Livre ou Article</h2>
+                {% for field in ticket_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small id="{{ field.id_for_label }}-help" class="form-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="error-message" role="alert">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Section Critique -->
+            <div class="review-section" role="group" aria-labelledby="review-section-title">
+                <h2 id="review-section-title">Votre Critique</h2>
+                {% for field in review_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small id="{{ field.id_for_label }}-help" class="form-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="error-message" role="alert">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Publier</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary" role="button">Annuler</a>
+            </div>
+        </form>
+    </section>
+</div>
 {% endblock %}

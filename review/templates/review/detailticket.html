@@ -1,44 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="ticket-detail">
-    <h1>Détail du ticket</h1>
-    
-    <div class="ticket">
-        <div class="ticket-header">
-            <h2>{{ ticket.title }}</h2>
+<main>
+    <article class="ticket-detail">
+        <div class="content-header ticket-header">
+            <h1>{{ ticket.title }}</h1>
             <span class="author">Par {{ ticket.user.username }}</span>
         </div>
-        
+
         <div class="ticket-content">
-            <p class="description">{{ ticket.description }}</p>
+            <p>{{ ticket.description }}</p>
             {% if ticket.image %}
                 <div class="ticket-image">
-                    <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+                    <img src="{{ ticket.image.url }}" alt="Image pour {{ ticket.title }}">
                 </div>
             {% endif %}
         </div>
 
-        {% if user == ticket.user %}
-            <div class="ticket-actions">
-                <a href="{% url 'update_ticket' ticket.pk %}" class="btn">Modifier le ticket</a>
-                <a href="{% url 'delete_ticket' ticket.pk %}" class="btn btn-danger">Supprimer le ticket</a>
-                </form>
-            </div>
-        {% endif %}
-    </div>
+        <div class="ticket-actions">
+            {% if user == ticket.user %}
+                <a href="{% url 'update_ticket' ticket.id %}" class="btn btn-primary">Modifier</a>
+                <a href="{% url 'delete_ticket' ticket.id %}" class="btn btn-danger">Supprimer</a>
+            {% else %}
+                <a href="{% url 'create_review' ticket.id %}" class="btn btn-primary" 
+                   aria-label="Créer une critique pour {{ ticket.title }}">Créer une critique</a>
+            {% endif %}
+        </div>
 
-    {% if not ticket.review_set.exists %}
-    <div class="review-section">
-        <h2>Créer une critique</h2>
-        <form method="post" action="{% url 'create_review' ticket.pk %}" class="review-form">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Publier la critique</button>
-        </form>
-    </div>
-    {% else %}
-        <p>Une critique existe déjà pour ce ticket</p>
-    {% endif %}
-</div>
+        {% if reviews %}
+            <section class="reviews-section" aria-labelledby="reviews-title">
+                <h2 id="reviews-title">Critiques</h2>
+                {% for review in reviews %}
+                    <article class="review-box">
+                        <div class="content-header review-header">
+                            <h3>{{ review.headline }}</h3>
+                            <span class="author">Par {{ review.user.username }}</span>
+                        </div>
+                        <div class="review-content">
+                            <p class="visually-hidden">Note : {{ review.rating }} sur 5</p>
+                            <div class="rating" role="img" aria-hidden="true">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <span>★</span>
+                                    {% else %}
+                                        <span>☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p>{{ review.body }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        {% endif %}
+    </article>
+</main>
 {% endblock %}

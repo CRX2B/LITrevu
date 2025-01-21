@@ -1,20 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="confirm-delete">
-    <div class="confirm-box">
-        <h1>Confirmer la suppression</h1>
-        <div class="warning-message">
-            <p>Voulez-vous vraiment supprimer cet élément ?</p>
-            <p class="warning-text">Cette action est irréversible.</p>
+<div class="confirm-delete-container">
+    <section class="confirm-delete" aria-labelledby="confirm-delete-title">
+        <h1 id="confirm-delete-title">Confirmation de suppression</h1>
+
+        <div class="warning-message" role="alert">
+            <p>Êtes-vous sûr de vouloir supprimer {{ object_type }} :</p>
+            {% if object_type == 'le ticket' %}
+                <div class="content-preview">
+                    <h2>{{ object.title }}</h2>
+                    <p>{{ object.description }}</p>
+                </div>
+            {% else %}
+                <div class="content-preview">
+                    <h2>{{ object.headline }}</h2>
+                    <p>{{ object.body }}</p>
+                </div>
+            {% endif %}
         </div>
-        <form method="post" class="confirm-form">
-            {% csrf_token %}
-            <div class="button-group">
-                <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
-                <a href="{% url 'home' %}" class="btn btn-secondary">Annuler</a>
-            </div>
-        </form>
-    </div>
+
+        <div class="action-buttons" role="group" aria-label="Options de confirmation">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" 
+                        aria-label="Confirmer la suppression de {{ object_type }}">
+                    Confirmer la suppression
+                </button>
+            </form>
+            {% if object_type == 'le ticket' %}
+                <a href="{% url 'detail_ticket' object.id %}" class="btn btn-secondary" role="button">Annuler</a>
+            {% else %}
+                <a href="{% url 'detail_review' object.id %}" class="btn btn-secondary" role="button">Annuler</a>
+            {% endif %}
+        </div>
+    </section>
 </div>
 {% endblock %}
