@@ -7,23 +7,32 @@
 
         <form method="post" enctype="multipart/form-data" class="ticket-form">
             {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <small id="{{ field.id_for_label }}-help" class="form-text">{{ field.help_text }}</small>
-                    {% endif %}
-                    {% if field.errors %}
-                        <div class="error-message" role="alert">
-                            {% for error in field.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+            <!-- Champs titre et description -->
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="error-message" role="alert">
+                        {% for error in form.title.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
 
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="error-message" role="alert">
+                        {% for error in form.description.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Image actuelle et champ pour la nouvelle image -->
             {% if ticket.image %}
                 <div class="current-image" aria-labelledby="current-image-title">
                     <h2 id="current-image-title">Image actuelle</h2>
@@ -32,6 +41,18 @@
                     </div>
                 </div>
             {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}">Nouvelle image (optionnel)</label>
+                <input type="file" name="image" id="{{ form.image.id_for_label }}" class="form-control" accept="image/*">
+                {% if form.image.errors %}
+                    <div class="error-message" role="alert">
+                        {% for error in form.image.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary" 

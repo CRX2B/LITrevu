@@ -1,50 +1,84 @@
 from django import forms
 from .models import Ticket, Review, UserFollows
-from authentication.models import User
+from django.contrib.auth import get_user_model
 
 
 class TicketForm(forms.ModelForm):
-    edit_ticket = forms.BooleanField(
-        widget=forms.HiddenInput, initial=True, required=False
-    )
-
     class Meta:
         model = Ticket
         fields = ["title", "description", "image"]
+        labels = {
+            "title": "Titre",
+            "description": "Description",
+            "image": "Image",
+        }
 
 
 class PostReviewForm(forms.ModelForm):
-    edit_review = forms.BooleanField(
-        widget=forms.HiddenInput, initial=True, required=False
-    )
-
     class Meta:
         model = Review
         fields = ["headline", "rating", "body"]
+        labels = {
+            "headline": "Titre",
+            "rating": "Note",
+            "body": "Commentaire",
+        }
         widgets = {
-            "body": forms.Textarea(attrs={"rows": 4}),
-            "rating": forms.RadioSelect(choices=Review.RATING_CHOICES),
+            "rating": forms.RadioSelect(
+                choices=[(0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")]
+            )
         }
 
 
 class PostReviewAndTicketForm(forms.Form):
-    title = forms.CharField(max_length=128, label="Titre du ticket")
-    description = forms.CharField(
-        widget=forms.Textarea, required=False, label="Description du ticket"
-    )
-    image = forms.ImageField(required=False)
+    """Formulaire pour créer simultanément un ticket et une critique."""
 
-    rating = forms.ChoiceField(choices=[(i, str(i)) for i in range(1, 6)], label="Note")
-    comment = forms.CharField(widget=forms.Textarea, label="Commentaires")
+    # Champs pour le ticket
+    title = forms.CharField(
+        max_length=128,
+        label="Titre",
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    description = forms.CharField(
+        max_length=2048,
+        label="Description",
+        widget=forms.Textarea(attrs={"class": "form-control"}),
+    )
+    image = forms.ImageField(
+        label="Image",
+        required=False,
+        widget=forms.ClearableFileInput(attrs={"class": "form-control"}),
+    )
+
+    # Champs pour la critique
+    rating = forms.ChoiceField(
+        choices=[(0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")],
+        label="Note",
+        widget=forms.RadioSelect(),
+    )
+    headline = forms.CharField(
+        max_length=128,
+        label="Titre de la critique",
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    body = forms.CharField(
+        max_length=8192,
+        label="Commentaire",
+        widget=forms.Textarea(attrs={"class": "form-control"}),
+    )
 
 
 class FollowUsersForm(forms.ModelForm):
     class Meta:
         model = UserFollows
         fields = ["followed_user"]
+        labels = {
+            "followed_user": "Utilisateur à suivre",
+        }
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user", None)
+        self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        if user:
-            self.fields["followed_user"].queryset = User.objects.exclude(pk=user.pk)
+        self.fields["followed_user"].queryset = get_user_model().objects.exclude(
+            id=self.user.id
+        )

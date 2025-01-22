@@ -2,6 +2,7 @@ from django.db import models
 from authentication.models import User
 from django.conf import settings
 from PIL import Image
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Ticket(models.Model):
@@ -39,6 +40,9 @@ class Ticket(models.Model):
         super().save(*args, **kwargs)
         self.resize_image()
 
+    def __str__(self):
+        return f"{self.title}"
+
 
 class Review(models.Model):
     """
@@ -57,11 +61,16 @@ class Review(models.Model):
     RATING_CHOICES = [(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")]
 
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, null=True, blank=True)
-    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
     headline = models.CharField(max_length=128)
     body = models.TextField(max_length=8192, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.headline}"
 
 
 class UserFollows(models.Model):
@@ -81,8 +90,12 @@ class UserFollows(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="following"
     )
     followed_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="followers"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="followed_by"
     )
 
     class Meta:
+        # Garantit qu'un utilisateur ne peut suivre un autre utilisateur qu'une seule fois
         unique_together = ("user", "followed_user")
+
+    def __str__(self):
+        return f"{self.user} suit {self.followed_user}"

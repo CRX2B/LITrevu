@@ -8,6 +8,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{% url 'passwordchange' %}'">Changer le mot de passe</button>
         </form>
         <div class="auth-links">
             <a href="{% url 'home' %}" class="btn">Retour à l'accueil</a>

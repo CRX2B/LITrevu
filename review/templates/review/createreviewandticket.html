@@ -11,43 +11,79 @@
             <!-- Section Ticket -->
             <div class="ticket-section" role="group" aria-labelledby="ticket-section-title">
                 <h2 id="ticket-section-title">Livre ou Article</h2>
-                {% for field in ticket_form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <small id="{{ field.id_for_label }}-help" class="form-text">{{ field.help_text }}</small>
-                        {% endif %}
-                        {% if field.errors %}
-                            <div class="error-message" role="alert">
-                                {% for error in field.errors %}
-                                    <p>{{ error }}</p>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                <!-- Champs du ticket -->
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="error-message" role="alert">
+                            {% for error in form.title.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="error-message" role="alert">
+                            {% for error in form.description.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                        <div class="error-message" role="alert">
+                            {% for error in form.image.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
             <!-- Section Critique -->
             <div class="review-section" role="group" aria-labelledby="review-section-title">
                 <h2 id="review-section-title">Votre Critique</h2>
-                {% for field in review_form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <small id="{{ field.id_for_label }}-help" class="form-text">{{ field.help_text }}</small>
-                        {% endif %}
-                        {% if field.errors %}
-                            <div class="error-message" role="alert">
-                                {% for error in field.errors %}
-                                    <p>{{ error }}</p>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                <!-- Champs de la critique -->
+                <div class="form-group">
+                    <label for="{{ form.headline.id_for_label }}">{{ form.headline.label }}</label>
+                    {{ form.headline }}
+                    {% if form.headline.errors %}
+                        <div class="error-message" role="alert">
+                            {% for error in form.headline.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.rating.id_for_label }}">{{ form.rating.label }}</label>
+                    {{ form.rating }}
+                    {% if form.rating.errors %}
+                        <div class="error-message" role="alert">
+                            {% for error in form.rating.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.body.id_for_label }}">{{ form.body.label }}</label>
+                    {{ form.body }}
+                    {% if form.body.errors %}
+                        <div class="error-message" role="alert">
+                            {% for error in form.body.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="form-actions">

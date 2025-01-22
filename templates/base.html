@@ -18,7 +18,6 @@
                         <a href="{% url 'user_posts' %}" class="nav-link">Mes posts</a>
                         <a href="{% url 'follow_users' %}" class="nav-link">Page d'abonnement</a>
                         <a href="{% url 'update_user' %}" class="nav-link">Mon profil</a>
-                        <a href="{% url 'passwordchange' %}" class="nav-link">Changer mon mot de passe</a>
                         <form method="post" action="{% url 'logout' %}" class="logout-form">
                             {% csrf_token %}
                             <button type="submit" class="nav-link">Déconnexion</button>

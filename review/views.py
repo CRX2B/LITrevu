@@ -189,9 +189,12 @@ def create_review_and_ticket(request):
             Review.objects.create(
                 ticket=ticket,
                 rating=form.cleaned_data["rating"],
-                headline=form.cleaned_data["title"],
-                body=form.cleaned_data["comment"],
+                headline=form.cleaned_data["headline"],
+                body=form.cleaned_data["body"],
                 user=request.user,
+            )
+            messages.success(
+                request, "Votre ticket et votre critique ont été créés avec succès."
             )
             return redirect("home")
     else:
@@ -222,28 +225,6 @@ class FollowUsersView(LoginRequiredMixin, CreateView):
         kwargs["user"] = self.request.user
         return kwargs
 
-    def form_valid(self, form):
-        """Vérifie et crée la relation d'abonnement.
-
-        Args:
-            form: Le formulaire validé
-
-        Returns:
-            HttpResponse: Redirection avec message de succès ou d'erreur
-        """
-        if UserFollows.objects.filter(
-            user=self.request.user, followed_user=form.cleaned_data["followed_user"]
-        ).exists():
-            messages.error(self.request, "Vous suivez déjà cet utilisateur.")
-            return redirect("follow_users")
-
-        form.instance.user = self.request.user
-        messages.success(
-            self.request,
-            f"Vous suivez maintenant {form.cleaned_data['followed_user'].username}.",
-        )
-        return super().form_valid(form)
-
     def post(self, request, *args, **kwargs):
         """Gère la recherche et l'ajout d'un utilisateur à suivre.
 
@@ -258,11 +239,27 @@ class FollowUsersView(LoginRequiredMixin, CreateView):
         search_user = request.POST.get("search_user")
         if search_user:
             try:
-                user = User.objects.get(username=search_user)
-                if user == request.user:
+                user_to_follow = User.objects.get(username=search_user)
+                if user_to_follow == request.user:
                     messages.error(request, "Vous ne pouvez pas vous suivre vous-même.")
                     return redirect("follow_users")
-                return super().post(request, *args, **kwargs)
+
+                # Vérifier si l'utilisateur est déjà suivi
+                if UserFollows.objects.filter(
+                    user=request.user, followed_user=user_to_follow
+                ).exists():
+                    messages.error(request, "Vous suivez déjà cet utilisateur.")
+                    return redirect("follow_users")
+
+                # Créer la relation de suivi
+                UserFollows.objects.create(
+                    user=request.user, followed_user=user_to_follow
+                )
+                messages.success(
+                    request, f"Vous suivez maintenant {user_to_follow.username}."
+                )
+                return redirect("follow_users")
+
             except User.DoesNotExist:
                 messages.error(request, f"L'utilisateur '{search_user}' n'existe pas.")
                 return redirect("follow_users")
