@@ -163,19 +163,22 @@ class ReviewDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "review/confirmdelete.html"
 
 
-@login_required
-def create_review_and_ticket(request):
-    """Vue pour créer simultanément un ticket et sa critique.
+class CreateReviewAndTicket(LoginRequiredMixin, View):
+    """
+    Vue pour créer simultanément un ticket et une critique.
+
+    Cette vue permet à l'utilisateur de soumettre un formulaire pour créer un ticket
+    et une critique associés. Elle vérifie la validité du formulaire et crée les objets
+    dans la base de données si le formulaire est valide.
+
+    Méthodes:
+        - post: Traite la soumission du formulaire pour créer un ticket et une critique.
+        - get: Affiche le formulaire pour créer un ticket et une critique.
 
     Nécessite que l'utilisateur soit connecté.
-
-    Args:
-        request: La requête HTTP
-
-    Returns:
-        HttpResponse: Page de création ou redirection vers l'accueil
     """
-    if request.method == "POST":
+
+    def post(self, request, *args, **kwargs):
         form = PostReviewAndTicketForm(request.POST, request.FILES)
         if form.is_valid():
             # Créer le ticket
@@ -197,10 +200,10 @@ def create_review_and_ticket(request):
                 request, "Votre ticket et votre critique ont été créés avec succès."
             )
             return redirect("home")
-    else:
-        form = PostReviewAndTicketForm()
 
-    return render(request, "review/createreviewandticket.html", {"form": form})
+    def get(self, request):
+        form = PostReviewAndTicketForm()
+        return render(request, "review/createreviewandticket.html", {"form": form})
 
 
 class FollowUsersView(LoginRequiredMixin, CreateView):

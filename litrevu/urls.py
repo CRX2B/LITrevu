@@ -88,7 +88,7 @@ urlpatterns = [
     ),
     path(
         "review/create/",
-        review.views.create_review_and_ticket,
+        review.views.CreateReviewAndTicket.as_view(),
         name="create_review_and_ticket",
     ),
     path(
