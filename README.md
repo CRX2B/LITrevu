@@ -46,6 +46,7 @@ pip install -r requirements.txt
 
 4. **Configurer les variables d'environnement**
 - Créer un fichier `.env` ou renommer le fichier `.env.example` à la racine du projet
+- Vous pouvez créer une clé secrète en lançant le serveur une première fois (étape 5).
 - Ajouter les variables suivantes :
 ```
 SECRET_KEY=votre_clé_secrète
