@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 from dotenv import load_dotenv
+from django.core.management.utils import get_random_secret_key
 
 load_dotenv()
 
@@ -26,6 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    SECRET_KEY = get_random_secret_key()
+    print(f"ATTENTION : SECRET_KEY non définie dans les variables d'environnement.")
+    print(f"Nouvelle SECRET_KEY générée : {SECRET_KEY}")
+    print("Ajoutez cette clé dans votre fichier .env pour une utilisation future.")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
