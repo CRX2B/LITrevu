@@ -52,17 +52,7 @@ SECRET_KEY=votre_clé_secrète
 DEBUG=True
 ```
 
-5. **Appliquer les migrations**
-```bash
-python manage.py migrate
-```
-
-6. **Créer un super utilisateur (administrateur)**
-```bash
-python manage.py createsuperuser
-```
-
-7. **Lancer le serveur de développement**
+5. **Lancer le serveur de développement**
 ```bash
 python manage.py runserver
 ```
