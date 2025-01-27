@@ -45,7 +45,7 @@ pip install -r requirements.txt
 ```
 
 4. **Configurer les variables d'environnement**
-- Créer un fichier `.env` à la racine du projet
+- Créer un fichier `.env` ou renommer le fichier `.env.example` à la racine du projet
 - Ajouter les variables suivantes :
 ```
 SECRET_KEY=votre_clé_secrète
